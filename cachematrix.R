@@ -1,4 +1,4 @@
-##This pair of functions inverts a matrix (x), after the
+##This pair of functions inverts a matrix 'inputMatrix', after the
 ##inverse is calculated, for the first time, the result is 
 ##cached. 
 ##
