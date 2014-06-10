@@ -13,32 +13,53 @@
 
 
 
-## Factory function that takes an invertible matrix x and 
-## creates a smartMatrix with the ability to cache its 
+## Factory function that takes an INVERTIBLE matrix 'inputMatrix' 
+## and creates a smartMatrix with the ability to cache its 
 ## inverse.
 ##
 ## The smartMatrix matrix is returned as a list of 
-## functions that invert x and assign the result to
-## cachedInverse.
+## functions that:
+##	 i)  Overwrite the original 'inputMatrix' with a new 
+##	     value.
+##	ii)  Return the matrix to be inverted 'inputMatrix'.
+##	iii) Write the inverse to the cache.	
+##	 iv) Read the inverse form the cache.
 ##  
 ## 
-makeCacheMatrix <- function(x = matrix()) {
+makeCacheMatrix <- function(inputMatrix = matrix()) {
 	##Inverse Cache
 	cachedInverse <-NULL;
 	
-	##Set the matrix to be inverted
+	##Overwrite the matrix to be inverted (inputMatrix)
+	##with a new matrix to be inverted (newInputMatrix 
 	##Invalidate the cached result.
-	set <-function(y) {
-		x<<-y
+	set <-function(newInputMatrix) {
+		inputMatrix <<-newInputMatrix
 		cachedInverse <<-NULL
 	}
-	get<-function( )x
 
-	setInverse<-function(inverse) cachedInverse <<-inverse
-	getInverse<-function() cachedInverse
-	list(set = set, get = get,
+	##Return the matrix for inversion.
+	get<-function(){
+		inputMatrix
+	} 
+	
+	##Persist the invers to the cache
+	setInverse<-function(inverse){ 
+		cachedInverse <<-inverse
+	}
+	
+	##REad the inverse from the cache.
+	getInverse<-function(){
+		cachedInverse
+	}
+	
+	##Create the smartMatrix.
+	smartMatrix<-list(set = set, get = get,
            setInverse= setInverse,
            getInverse= getInverse)
+	
+	##Retrun the smartMatrix
+	invisible(smartMatrix)
 }
 
 
@@ -53,13 +74,16 @@ makeCacheMatrix <- function(x = matrix()) {
 ##
 cacheSolve <- function(smartMatrix, ...) {
 	
+	##Read the cached inverse.
 	inverse<-smartMatrix$getInverse()
-	if(!is.null(inverse)){ ## second or subsequent call use cached value
+	if(!is.null(inverse)){
+		##Inverse is has been cached, return it and exit. 
 		message("using smartMatrix's cached inverse")
 		return(inverse)
 	}
 	
-	##Firts call fetch the data from the 'smartMatrix'
+	##Inverse hasnt ben cached fetch the matrix for inversion 
+	##from the 'smartMatrix'
 	matrix2Invert<-smartMatrix$get()
 
 	##Invert the Matrix
@@ -69,6 +93,5 @@ cacheSolve <- function(smartMatrix, ...) {
 	smartMatrix$setInverse(inverse)
 	
 	## Return the inverse of 'smartMatrix'
-	inverse	   
-        
+	inverse	     
 }
